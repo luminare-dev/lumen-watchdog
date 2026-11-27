@@ -1,0 +1,74 @@
+{
+  "allowed_mentions": {
+    "parse": [],
+    "users": [
+      "123456789012345678"
+    ]
+  },
+  "avatar_url": "https://raw.githubusercontent.com/luminare-dev/lumen-watchdog/main/docs/brand/avatar-256.png",
+  "components": [
+    {
+      "content": "<@123456789012345678> Test message from web.example.com",
+      "type": 10
+    },
+    {
+      "accent_color": 6021119,
+      "components": [
+        {
+          "accessory": {
+            "description": "Lumen Watchdog",
+            "media": {
+              "url": "https://raw.githubusercontent.com/luminare-dev/lumen-watchdog/main/docs/brand/avatar-256.png"
+            },
+            "type": 11
+          },
+          "components": [
+            {
+              "content": "## Test message\n**web.example.com**",
+              "type": 10
+            }
+          ],
+          "type": 9
+        },
+        {
+          "divider": true,
+          "spacing": 1,
+          "type": 14
+        },
+        {
+          "content": "This is a test message from lumen-watchdog. When it shows the coloured box, the buttons and the mention, the Discord channel is set up.",
+          "type": 10
+        },
+        {
+          "divider": true,
+          "spacing": 1,
+          "type": 14
+        },
+        {
+          "content": "-# lumen-watchdog 0.1.0 · web.example.com · <t:1795800000:f> · checks every 5 min",
+          "type": 10
+        },
+        {
+          "components": [
+            {
+              "label": "Panel",
+              "style": 5,
+              "type": 2,
+              "url": "https://panel.example.com/"
+            },
+            {
+              "label": "Webmail",
+              "style": 5,
+              "type": 2,
+              "url": "https://webmail.example.com/"
+            }
+          ],
+          "type": 1
+        }
+      ],
+      "type": 17
+    }
+  ],
+  "flags": 32768,
+  "username": "Lumen Watchdog"
+}

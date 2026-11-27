@@ -1,0 +1,160 @@
+# lumen-watchdog example configuration. Copy to /etc/lumen-watchdog/config.toml and adapt.
+# Every setting is described in docs/configuration.md; anything left out takes its default.
+# Secrets never go here: DISCORD_WEBHOOK_URL, DISCORD_PING_USER_ID and NTFY_TOKEN come from the
+# environment or from env_file (root-owned, mode 600).
+
+[watchdog]
+host_name = "server.example.com"
+state_file = "/var/lib/lumen-watchdog/state.json"
+env_file = "/etc/lumen-watchdog/secrets.env"
+interval_minutes = 5
+timezone = "Europe/Vienna"
+
+[defaults]
+repeat_minutes = 360      # remind every 6 h while a problem stays open
+cooldown_minutes = 15
+confirm_runs = 1
+recoveries = true
+
+[checks.systemd]
+watch = [
+  "dovecot.service", "postfix.service", "postfix@-.service", "rspamd.service",
+  "redis-keyhelp.service", "redis-server.service", "apache2.service",
+  "keyhelp-php*-fpm.service", "php8.*-fpm.service", "mariadb.service",
+  "postgresql@*-main.service", "clamav-daemon.service", "pteroq.service", "docker.service",
+  "named.service", "fail2ban.service", "cron.service", "certbot.timer",
+]
+optional = ["certbot.timer"]
+restart_warn = 1
+restart_crit = 5
+
+[checks.oom]
+lookback_minutes = 60
+
+[checks.mail]
+queue_warn = 30
+queue_crit = 150
+age_warn_minutes = 60
+age_crit_minutes = 240
+rspamd_url = "http://127.0.0.1:11334/ping"
+
+[[checks.mail.endpoints]]
+name = "Dovecot IMAP"
+host = "127.0.0.1"
+port = 143
+expect = "* OK"
+quit = "a LOGOUT"
+
+[[checks.mail.endpoints]]
+name = "Dovecot IMAPS"
+host = "127.0.0.1"
+port = 993
+tls = true
+expect = "* OK"
+quit = "a LOGOUT"
+
+[[checks.mail.endpoints]]
+name = "Dovecot LMTP"
+unix = "/var/spool/postfix/private/dovecot-lmtp"
+expect = "220"
+quit = "QUIT"
+
+[[checks.mail.endpoints]]
+name = "Postfix SMTP"
+host = "127.0.0.1"
+port = 25
+expect = "220"
+quit = "QUIT"
+
+[checks.disk]
+used_warn_percent = 85
+used_crit_percent = 93
+
+[checks.memory]
+# Small host with ClamAV (about 1 GiB): warn early.
+available_warn_percent = 10
+available_crit_percent = 5
+swap_warn_percent = 75
+swap_crit_percent = 90
+
+[checks.load]
+per_cpu_warn = 2.0
+per_cpu_crit = 4.0
+
+[checks.tls]
+warn_days = 21
+crit_days = 7
+hosts = [
+  "server.example.com", "panel.example.com", "webmail.example.com", "www.example.com",
+  "server.example.com:993", "server.example.com:465",
+]
+
+[checks.http]
+latency_warn_ms = 3000
+latency_crit_ms = 10000
+
+[[checks.http.urls]]
+name = "Webmail"
+url = "https://webmail.example.com/"
+
+[[checks.http.urls]]
+name = "Panel"
+url = "https://server.example.com/"
+
+[[checks.http.urls]]
+name = "Panel login"
+url = "https://panel.example.com/auth/login"
+
+[[checks.http.urls]]
+name = "Website"
+url = "https://www.example.com/"
+latency_warn_ms = 1500
+
+[[checks.http.urls]]
+name = "ntfy"
+url = "https://ntfy.example.com/v1/health"
+contains = "healthy"
+
+[checks.backups]
+[[checks.backups.dirs]]
+name = "Panel backup"
+path = "/var/backups/panel"
+max_age_hours = 30
+
+[checks.apt]
+security_warn = 1
+
+[checks.quota]
+mounts = ["/"]
+types = ["user", "group"]
+
+[discord]
+enabled = true
+min_severity = "warning"
+
+[[discord.buttons]]
+label = "Panel"
+url = "https://server.example.com/"
+
+[[discord.buttons]]
+label = "Webmail"
+url = "https://webmail.example.com/"
+
+[[discord.buttons]]
+label = "Panel"
+url = "https://panel.example.com/"
+
+[ntfy]
+enabled = true
+url = "https://ntfy.example.com"
+topic = "watchdog-server"
+click = "https://server.example.com/"
+min_severity = "warning"
+
+[[ntfy.actions]]
+label = "Panel"
+url = "https://server.example.com/"
+
+[[ntfy.actions]]
+label = "Webmail"
+url = "https://webmail.example.com/"

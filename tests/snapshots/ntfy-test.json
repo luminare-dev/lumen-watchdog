@@ -1,0 +1,18 @@
+{
+  "actions": [
+    {
+      "action": "view",
+      "clear": false,
+      "label": "Panel",
+      "url": "https://panel.example.com/"
+    }
+  ],
+  "click": "https://panel.example.com/",
+  "message": "Test message from lumen-watchdog. When this arrives, the ntfy channel is set up.",
+  "priority": 3,
+  "tags": [
+    "test_tube"
+  ],
+  "title": "Test message from web.example.com",
+  "topic": "watchdog"
+}

@@ -1,0 +1,18 @@
+{
+  "actions": [
+    {
+      "action": "view",
+      "clear": false,
+      "label": "Panel",
+      "url": "https://panel.example.com/"
+    }
+  ],
+  "click": "https://panel.example.com/",
+  "message": "New problems:\n🔴 dovecot.service has failed\n\nWorse than before:\n🔴 / is 96% full (3.0 GiB free)\n\nEvents:\n🔴 OOM killer stopped 1 process: clamd\n\nRecovered:\n🟢 Webmail: HTTP 502\n\n5 open · 27.11.2026 17:20 UTC",
+  "priority": 5,
+  "tags": [
+    "rotating_light"
+  ],
+  "title": "Critical on web.example.com: 1 new problem, 1 got worse, 1 event, 1 recovered",
+  "topic": "watchdog"
+}
