@@ -139,7 +139,7 @@ Fixes go into the latest minor release only. See the
 |---|---|---|
 | Unit tests | every check, the engine, both payloads | `python3 -m unittest discover -s tests -v` in CI |
 | Run time | about 4 s for 11 checks, 16 certificates and 7 URLs | `run --dry-run` on a 3-CPU, 4 GB host, 2026-11-27 |
-| Peak memory | about 25 MB for the Python process | same run, `/usr/bin/time -v` (the `apt-get -s` child needs more) |
+| Peak memory | about 30 MB for the Python process, about 120 MB for the `apt-get -s` child | same run, `getrusage` |
 
 ## Documentation and links
 

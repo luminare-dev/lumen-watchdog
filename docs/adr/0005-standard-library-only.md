@@ -25,7 +25,7 @@ make the state handling, the JSON payloads and the tests much harder.
 ## Consequences
 
 - Good: no packages to install or update on the host; one file tree under `/opt`.
-- Good: nothing stays in memory between runs; the Python process peaks at about 25 MB.
+- Good: nothing stays in memory between runs; the Python process peaks at about 30 MB (the `apt-get -s` child of the apt check at about 120 MB, every 6 hours).
 - Bad: certificate parsing uses `ssl._ssl._test_decode_cert`, a private helper of the standard
   library. The TLS tests cover it, and a failure shows up as a check error, not a crash.
 - Lint (ruff) runs in CI only, through `pipx run` with a pinned version.

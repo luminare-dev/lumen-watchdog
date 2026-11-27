@@ -30,7 +30,10 @@ two accounts can use it: the watchdog (write-only on one topic, with a token) an
    The script prints `NTFY_TOKEN=...` for `/etc/lumen-watchdog/secrets.env` and the phone
    account's password once.
 4. **Watchdog**: in `config.toml` set `[ntfy] enabled = true`, `url` and `topic`, then
-   `sudo lumen-watchdog test --channel ntfy`.
+   `sudo lumen-watchdog test --channel ntfy`. On the same host, `url = "http://127.0.0.1:2586"`
+   publishes without DNS or the web server; add an `[[checks.http.urls]]` entry for
+   `https://<ntfy host>/v1/health` with `contains = "healthy"` so a broken public endpoint is
+   reported.
 5. **Phone**: in the ntfy app, add the server under *Settings → Manage users* with the phone
    account, then subscribe to the topic on that server.
 
