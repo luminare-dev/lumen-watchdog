@@ -1,0 +1,24 @@
+# lumen-watchdog: one run of the checks; started by lumen-watchdog.timer.
+#
+# No mount-namespace sandboxing (ProtectSystem, PrivateTmp, PrivateDevices ...) on purpose: those
+# need a working mount namespace, and a host where namespaces fail is exactly when the watchdog
+# must still run and report the failed services (docs/adr/0006-no-namespace-sandbox.md).
+[Unit]
+Description=lumen-watchdog server health checks
+Documentation=https://github.com/luminare-dev/lumen-watchdog
+After=network-online.target
+Wants=network-online.target
+OnFailure=lumen-watchdog-failure.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /opt/lumen-watchdog/bin/lumen-watchdog --config /etc/lumen-watchdog/config.toml run
+EnvironmentFile=-/etc/lumen-watchdog/secrets.env
+StateDirectory=lumen-watchdog
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+Nice=10
+IOSchedulingClass=idle
+MemoryMax=192M
+TimeoutStartSec=10min

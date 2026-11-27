@@ -1,0 +1,11 @@
+[Unit]
+Description=Run lumen-watchdog every 5 minutes
+Documentation=https://github.com/luminare-dev/lumen-watchdog
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=5min
+AccuracySec=20s
+
+[Install]
+WantedBy=timers.target

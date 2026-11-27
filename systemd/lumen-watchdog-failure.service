@@ -1,0 +1,12 @@
+# Sends "the watchdog run failed" to the channels when lumen-watchdog.service fails.
+[Unit]
+Description=lumen-watchdog failure notice
+Documentation=https://github.com/luminare-dev/lumen-watchdog
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /opt/lumen-watchdog/bin/lumen-watchdog --config /etc/lumen-watchdog/config.toml notify-failure --unit lumen-watchdog.service
+EnvironmentFile=-/etc/lumen-watchdog/secrets.env
+NoNewPrivileges=yes
+MemoryMax=96M
+TimeoutStartSec=3min

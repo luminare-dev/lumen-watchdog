@@ -1,0 +1,24 @@
+# ntfy server configuration (https://docs.ntfy.sh/config/). Copy next to compose.yaml and set
+# base-url to the public name. Users and tokens are created with setup-users.sh.
+base-url: "https://ntfy.example.com"
+listen-http: ":2586"   # unprivileged port: the container runs without capabilities
+behind-proxy: true
+
+# Access control: nobody may read or write without an account; each user gets only its topic.
+auth-file: "/var/lib/ntfy/user.db"
+auth-default-access: "deny-all"
+enable-login: true
+require-login: true
+enable-signup: false
+
+# Keep messages for a day so a phone that was offline still gets them.
+cache-file: "/var/lib/ntfy/cache.db"
+cache-duration: "24h"
+
+# No attachments: alerts are text only.
+attachment-file-size-limit: "0"
+
+# iOS only receives instant notifications through the upstream server: it forwards a poll request
+# with the message ID (no message text) to ntfy.sh, and the phone then fetches the message here.
+# Remove the line when no iOS device subscribes.
+upstream-base-url: "https://ntfy.sh"
