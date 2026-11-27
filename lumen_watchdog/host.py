@@ -5,6 +5,7 @@ The checks never call subprocess, socket, ssl or open() themselves. They ask a `
 
 from __future__ import annotations
 
+import contextlib
 import os
 import socket
 import ssl
@@ -153,10 +154,8 @@ class Host:
                     break
                 data += chunk
             if quit_line:
-                try:
+                with contextlib.suppress(OSError):
                     sock.sendall(quit_line)
-                except OSError:
-                    pass
             return data.decode("utf-8", "replace").strip(), (time.monotonic() - start) * 1000
         finally:
             sock.close()
@@ -168,18 +167,18 @@ class Host:
         der = None
         ctx = ssl.create_default_context()
         try:
-            with socket.create_connection((host, port), timeout=timeout) as raw:
-                with ctx.wrap_socket(raw, server_hostname=name) as tls:
-                    der = tls.getpeercert(binary_form=True)
+            with socket.create_connection((host, port), timeout=timeout) as raw, \
+                    ctx.wrap_socket(raw, server_hostname=name) as tls:
+                der = tls.getpeercert(binary_form=True)
         except ssl.SSLCertVerificationError as exc:
             verify_error = exc.verify_message or str(exc)
         if der is None:
             loose = ssl.create_default_context()
             loose.check_hostname = False
             loose.verify_mode = ssl.CERT_NONE
-            with socket.create_connection((host, port), timeout=timeout) as raw:
-                with loose.wrap_socket(raw, server_hostname=name) as tls:
-                    der = tls.getpeercert(binary_form=True)
+            with socket.create_connection((host, port), timeout=timeout) as raw, \
+                    loose.wrap_socket(raw, server_hostname=name) as tls:
+                der = tls.getpeercert(binary_form=True)
         return _parse_der(der, verify_error)
 
     def http(self, url: str, *, method: str = "GET", timeout: float = 10.0,

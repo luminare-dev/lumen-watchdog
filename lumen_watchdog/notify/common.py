@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import contextlib
+import datetime
 import json
-import time
+import zoneinfo
 
-from ..model import (CRITICAL, ESCALATED, EVENT, NEW, OK, RECOVERED, REMINDER, WARNING, Alert, Notice,
-                     parse_severity)
+from ..model import CRITICAL, ESCALATED, EVENT, NEW, OK, RECOVERED, REMINDER, WARNING, Alert, Notice, parse_severity
 
 COLORS = {  # Luminare palette: Ember bright, Amber bright, Verdant bright, Lumen
     CRITICAL: 0xFF5147,
@@ -52,14 +53,19 @@ def title(alert: Alert) -> str:
         return f"Test message from {alert.host}"
     if alert.failure:
         return f"Watchdog run failed on {alert.host}"
-    counts = []
+    return f"{LEVEL_WORDS[level(alert)]} on {alert.host}: {counts(alert)}"
+
+
+def counts(alert: Alert) -> str:
+    """'2 new problems, 1 recovered'."""
+    parts = []
     for kind, one, many in ((NEW, "new problem", "new problems"), (ESCALATED, "got worse", "got worse"),
                             (EVENT, "event", "events"), (REMINDER, "still open", "still open"),
                             (RECOVERED, "recovered", "recovered")):
         n = len(alert.by_kind(kind))
         if n:
-            counts.append(f"{n} {one if n == 1 else many}")
-    return f"{LEVEL_WORDS[level(alert)]} on {alert.host}: {', '.join(counts)}"
+            parts.append(f"{n} {one if n == 1 else many}")
+    return ", ".join(parts)
 
 
 def notice_line(n: Notice) -> str:
@@ -100,21 +106,25 @@ def post_json(host, url: str, payload: dict, *, headers: dict | None = None, tim
 
 
 def _retry_after(resp) -> float:
-    try:
+    candidates = []
+    with contextlib.suppress(ValueError, TypeError):
         body = json.loads(resp.body or b"{}")
         if isinstance(body, dict) and "retry_after" in body:
-            return float(body["retry_after"]) + 0.25
-    except (json.JSONDecodeError, ValueError, TypeError):
-        pass
-    for header in ("retry-after", "x-ratelimit-reset-after"):
-        if header in resp.headers:
-            try:
-                return float(resp.headers[header]) + 0.25
-            except ValueError:
-                pass
+            candidates.append(body["retry_after"])
+    candidates += [resp.headers[h] for h in ("retry-after", "x-ratelimit-reset-after") if h in resp.headers]
+    for value in candidates:
+        with contextlib.suppress(ValueError, TypeError):
+            return float(value) + 0.25
     return 5.0
 
 
-def local_time(ts: float, label: str = "") -> str:
-    text = time.strftime("%d.%m.%Y %H:%M", time.localtime(ts))
-    return f"{text} {label}".strip()
+def local_time(ts: float, timezone: str = "") -> str:
+    """'27.11.2026 21:13 CET' in the configured IANA time zone (or the host's)."""
+    tz = None
+    if timezone:
+        try:
+            tz = zoneinfo.ZoneInfo(timezone)
+        except (zoneinfo.ZoneInfoNotFoundError, ValueError):
+            tz = None
+    when = datetime.datetime.fromtimestamp(ts, tz) if tz else datetime.datetime.fromtimestamp(ts).astimezone()
+    return when.strftime("%d.%m.%Y %H:%M %Z").strip()

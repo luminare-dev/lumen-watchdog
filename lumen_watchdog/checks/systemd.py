@@ -80,7 +80,8 @@ def run(cfg: dict, host, data: dict) -> list[Result]:
             results.append(Result(NAME, f"systemd.watch:{pattern}", WARNING, f"no unit matches {pattern}"))
 
     if units:
-        out = host.run([SYSTEMCTL, "show", "--no-pager", "-p", "Id,LoadState,ActiveState,SubState,NRestarts,Result", *units])
+        props = "Id,LoadState,ActiveState,SubState,NRestarts,Result"
+        out = host.run([SYSTEMCTL, "show", "--no-pager", "-p", props, *units])
         shown = parse_show(out.stdout)
         inactive_sev = parse_severity(cfg.get("inactive_severity", "critical"))
         restarts_prev: dict = data.setdefault("restarts", {})

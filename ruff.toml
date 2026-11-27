@@ -2,14 +2,25 @@
 line-length = 120
 target-version = "py311"
 
+# Files that come unchanged from oss-template are linted there.
+extend-exclude = [
+  "scripts/",
+  "tests/test_check_pr_title.py",
+  "tests/test_check_workflows.py",
+  "tests/test_forbidden_words.py",
+  "tests/test_package_release.py",
+  "tests/test_repo_config.py",
+  "tests/test_set_byline.py",
+]
+
 [lint]
 select = ["E", "F", "W", "B", "I", "UP", "S", "BLE", "SIM"]
 ignore = [
   "S603",  # subprocess with a fixed argument list; no shell is used
   "S310",  # urllib with URLs from the root-owned configuration
   "S101",  # assert in tests
+  "S105",  # setting names such as "token_env" hold the names of environment variables, not secrets
 ]
 
 [lint.per-file-ignores]
 "tests/*" = ["S", "B"]
-"scripts/*" = ["S", "B", "SIM", "UP", "I", "E501", "BLE"]

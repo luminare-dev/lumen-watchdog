@@ -27,7 +27,7 @@ def parse_queue(stdout: str) -> tuple[int, float | None, dict]:
         queue = str(msg.get("queue_name", "?"))
         per_queue[queue] = per_queue.get(queue, 0) + 1
         arrival = msg.get("arrival_time")
-        if isinstance(arrival, (int, float)) and (oldest is None or arrival < oldest):
+        if isinstance(arrival, int | float) and (oldest is None or arrival < oldest):
             oldest = float(arrival)
     return count, oldest, per_queue
 

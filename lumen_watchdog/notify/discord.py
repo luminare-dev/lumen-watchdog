@@ -14,8 +14,8 @@ import re
 import urllib.parse
 
 from .. import __version__
-from ..model import RECOVERED, Alert, KIND_ORDER
-from .common import COLORS, HEADINGS, SendError, level, notice_line, post_json, title
+from ..model import ESCALATED, KIND_ORDER, RECOVERED, REMINDER, Alert
+from .common import COLORS, HEADINGS, LEVEL_WORDS, SendError, counts, level, notice_line, post_json, title
 
 IS_COMPONENTS_V2 = 1 << 15
 TEXT_BUDGET = 3800          # of Discord's 4000 characters, leaving room for the header and footer
@@ -48,9 +48,13 @@ def build_payload(alert: Alert, cfg: dict, ping_user: str = "", interval_minutes
     else:
         lines = []
 
-    head_text = f"## {title(alert)}"
-    if not alert.test and not alert.failure:
-        head_text += f"\n{alert.open_problems} open problem{'s' if alert.open_problems != 1 else ''} after this check"
+    if alert.test:
+        head_text = f"## Test message\n**{alert.host}**"
+    elif alert.failure:
+        head_text = f"## Watchdog run failed\n**{alert.host}**"
+    else:
+        open_text = f"{alert.open_problems} open problem{'s' if alert.open_problems != 1 else ''}"
+        head_text = f"## {LEVEL_WORDS[level(alert)]} · {alert.host}\n{counts(alert)}\n-# {open_text} after this check"
     used += len(head_text)
 
     head: dict = {"type": 9, "components": [_text(head_text)]}
@@ -78,10 +82,10 @@ def build_payload(alert: Alert, cfg: dict, ping_user: str = "", interval_minutes
         out = [f"**{HEADINGS[kind]}**"]
         for n in notices:
             line = notice_line(n)
+            if n.since and n.kind in (REMINDER, ESCALATED, RECOVERED):
+                line += f" · since <t:{int(n.since)}:R>"
             if n.kind != RECOVERED and n.result.detail:
                 line += f"\n-# {n.result.detail[:200]}"
-            if n.since and n.kind in ("reminder", "escalated", "recovered"):
-                line += f" · since <t:{int(n.since)}:R>"
             if used + len(line) + 40 > TEXT_BUDGET:
                 break
             out.append(line)

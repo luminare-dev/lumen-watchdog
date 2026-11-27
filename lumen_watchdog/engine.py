@@ -7,6 +7,7 @@ row it failed and when it was last sent.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import tempfile
@@ -15,7 +16,7 @@ from dataclasses import asdict
 
 from . import checks as check_registry
 from .config import CHECK_NAMES, check_settings
-from .model import (ESCALATED, EVENT, NEW, OK, RECOVERED, REMINDER, WARNING, Alert, Notice, Result)
+from .model import ESCALATED, EVENT, NEW, OK, RECOVERED, REMINDER, WARNING, Alert, Notice, Result
 
 STATE_VERSION = 1
 TOLERANCE = 30  # seconds: a timer that fires a little early still counts as due
@@ -51,10 +52,8 @@ def save_state(path: str, state: dict) -> None:
         os.chmod(tmp, 0o600)
         os.replace(tmp, path)
     except BaseException:
-        try:
+        with contextlib.suppress(OSError):
             os.unlink(tmp)
-        except OSError:
-            pass
         raise
 
 

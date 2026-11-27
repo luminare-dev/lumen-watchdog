@@ -12,7 +12,7 @@ TAGS = {CRITICAL: ["rotating_light"], WARNING: ["warning"], OK: ["white_check_ma
 MESSAGE_BUDGET = 3800       # ntfy's default message limit is 4096 bytes
 
 
-def build_payload(alert: Alert, cfg: dict, timezone_label: str = "") -> dict:
+def build_payload(alert: Alert, cfg: dict, timezone: str = "") -> dict:
     lvl = level(alert)
     if alert.test:
         lines = ["Test message from lumen-watchdog. When this arrives, the ntfy channel is set up."]
@@ -30,7 +30,7 @@ def build_payload(alert: Alert, cfg: dict, timezone_label: str = "") -> dict:
             lines.append(f"{HEADINGS[kind]}:")
             lines.extend(notice_line(n) for n in notices)
         lines.append("")
-        lines.append(f"{alert.open_problems} open · {local_time(alert.created, timezone_label)}")
+        lines.append(f"{alert.open_problems} open · {local_time(alert.created, timezone)}")
     message = "\n".join(lines)
     if len(message.encode("utf-8")) > MESSAGE_BUDGET:
         message = message.encode("utf-8")[:MESSAGE_BUDGET].decode("utf-8", "ignore").rsplit("\n", 1)[0] + "\n…"
@@ -50,12 +50,12 @@ def build_payload(alert: Alert, cfg: dict, timezone_label: str = "") -> dict:
     return payload
 
 
-def send(host, alert: Alert, cfg: dict, timezone_label: str = "", environ=None) -> str:
+def send(host, alert: Alert, cfg: dict, timezone: str = "", environ=None) -> str:
     environ = os.environ if environ is None else environ
     token = environ.get(cfg.get("token_env", "NTFY_TOKEN"), "")
     if not cfg.get("url") or not cfg.get("topic"):
         raise SendError("ntfy: url and topic must be set")
     headers = {"Authorization": f"Bearer {token}"} if token else {}
-    reply = post_json(host, cfg["url"].rstrip("/"), build_payload(alert, cfg, timezone_label),
+    reply = post_json(host, cfg["url"].rstrip("/"), build_payload(alert, cfg, timezone),
                       headers=headers, what="ntfy")
     return str(reply.get("id", ""))

@@ -17,7 +17,7 @@ DEFAULTS: dict = {
         "state_file": "/var/lib/lumen-watchdog/state.json",
         "env_file": "/etc/lumen-watchdog/secrets.env",
         "interval_minutes": 5,                 # how often the timer runs (shown in the footer)
-        "timezone_label": "",                  # optional label after the time, e.g. "CET"
+        "timezone": "",                        # IANA name for times in ntfy messages; empty: the host's
     },
     "defaults": {
         "every_minutes": 0,                    # run the check on every run

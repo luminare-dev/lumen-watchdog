@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from ..model import CRITICAL, Result, WARNING, grade, parse_severity
+from ..model import CRITICAL, WARNING, Result, grade, parse_severity
 from .util import age_text
 
 APT_GET = "/usr/bin/apt-get"

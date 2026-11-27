@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import fnmatch
 
 from ..model import Result, grade
@@ -67,10 +68,8 @@ def parse_pressure(text: str) -> dict[str, float]:
         if not parts:
             continue
         fields = dict(p.split("=", 1) for p in parts[1:] if "=" in p)
-        try:
+        with contextlib.suppress(ValueError):
             out[parts[0]] = float(fields.get("avg60", "0"))
-        except ValueError:
-            pass
     return out
 
 

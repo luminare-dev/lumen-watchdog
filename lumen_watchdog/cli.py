@@ -19,7 +19,8 @@ DEFAULT_CONFIG = "/etc/lumen-watchdog/config.toml"
 
 
 def _parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="lumen-watchdog", description="Small health watchdog with Discord and ntfy alerts.")
+    p = argparse.ArgumentParser(prog="lumen-watchdog",
+                                description="Small health watchdog with Discord and ntfy alerts.")
     p.add_argument("--version", action="version", version=f"lumen-watchdog {__version__}")
     p.add_argument("-c", "--config", default=os.environ.get("LUMEN_WATCHDOG_CONFIG", DEFAULT_CONFIG))
     p.add_argument("--state", help="state file (default: watchdog.state_file from the configuration)")

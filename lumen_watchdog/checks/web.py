@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..model import CRITICAL, OK, Result, WARNING, grade
+from ..model import CRITICAL, OK, WARNING, Result, grade
 
 
 def tls_targets(cfg: dict) -> list[dict]:
