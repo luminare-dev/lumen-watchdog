@@ -1,0 +1,30 @@
+Lumen Watchdog
+Copyright 2026 Paul Pasaurek
+
+The source code in this repository is licensed under Apache-2.0 (see the
+LICENSE file). That licence covers the code only.
+
+The names "Luminare Development" and "Luminare", the Luminare logo and mark,
+the name and logo of this project, the README header images, the social
+preview image and all files in docs/brand/ are not licensed under Apache-2.0
+or under any other licence in this repository. No permission is granted to
+use them, except as required for reasonable and customary use in describing
+the origin of the work and reproducing the content of this NOTICE file.
+
+The images in docs/brand/ contain text set in the Sora typeface, converted to
+outlines. Sora is Copyright 2019 The Sora Project Authors and is licensed
+under the SIL Open Font License, Version 1.1 (https://openfontlicense.org).
+The font keeps its own licence.
+
+docs/brand/avatar-256.png is the Luminare app icon, used as the avatar and
+thumbnail of the Discord messages; it is covered by the paragraph above.
+
+Postfix, Dovecot, Rspamd, ntfy, Discord, systemd
+This repository contains no code of these projects or services. It reads
+their status and sends messages to them; they keep their own licences and
+terms. Not affiliated with or endorsed by any of them.
+
+KeyHelp
+Not affiliated with or endorsed by Keyweb AG. KeyHelp is a registered
+trademark of Keyweb AG and is named only to describe what this project works
+with.

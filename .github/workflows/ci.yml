@@ -1,0 +1,63 @@
+# Caller: lint, unit tests and the full-history secret scan on every pull request and push to main,
+# plus two project jobs:
+#   ruff        Python lint (ruff, pinned, run with pipx; only in CI, the host needs no packages);
+#   shellcheck  install.sh, uninstall.sh and the ntfy setup script.
+# Only GitHub-owned actions and plain shell are used in these jobs.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      test-command: python3 -m unittest discover -s tests -v
+    permissions:
+      contents: read
+
+  secrets:
+    uses: ./.github/workflows/reusable-gitleaks.yml
+    permissions:
+      contents: read
+
+  ruff:
+    name: ruff
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: ruff check (version pinned)
+        run: pipx run ruff==0.17.6 check --output-format=github .
+
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: shellcheck
+        run: |
+          shellcheck --version
+          shellcheck install.sh uninstall.sh deploy/ntfy/setup-users.sh

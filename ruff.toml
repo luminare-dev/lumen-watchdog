@@ -1,0 +1,15 @@
+# ruff runs in CI only (pipx run ruff==<pinned> check .).
+line-length = 120
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W", "B", "I", "UP", "S", "BLE", "SIM"]
+ignore = [
+  "S603",  # subprocess with a fixed argument list; no shell is used
+  "S310",  # urllib with URLs from the root-owned configuration
+  "S101",  # assert in tests
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["S", "B"]
+"scripts/*" = ["S", "B", "SIM", "UP", "I", "E501", "BLE"]
