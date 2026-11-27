@@ -15,8 +15,18 @@ from fakes import NOW, FakeHost, ok
 
 from lumen_watchdog.config import load
 from lumen_watchdog.host import HttpResponse
-from lumen_watchdog.model import (CRITICAL, ESCALATED, EVENT, NEW, RECOVERED, REMINDER, WARNING, Alert, Notice,
-                                  Result)
+from lumen_watchdog.model import (
+    CRITICAL,
+    ESCALATED,
+    EVENT,
+    NEW,
+    RECOVERED,
+    REMINDER,
+    WARNING,
+    Alert,
+    Notice,
+    Result,
+)
 from lumen_watchdog.notify import deliver, discord, ntfy, render
 from lumen_watchdog.notify.common import SendError, for_channel, post_json
 

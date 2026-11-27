@@ -1,0 +1,3 @@
+# Reviewed findings that are not secrets (gitleaks fingerprints).
+# A made-up 18-digit Discord user ID in a test, replaced in the next commit.
+804284041a8965121fb46ff7f5357c91cf376113:tests/test_cli.py:discord-client-id:21

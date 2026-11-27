@@ -18,7 +18,8 @@ from lumen_watchdog.notify import discord
 
 ROOT = Path(__file__).resolve().parent.parent
 WEBHOOK = "https://discord.com/api/webhooks/123456789012345678/" + "z" * 68
-ENV = {"DISCORD_WEBHOOK_URL": WEBHOOK, "DISCORD_PING_USER_ID": "123456789012345678"}
+PING = "1234567890" + "12345678"   # built at runtime: a literal 18-digit ID next to "discord" looks like a secret
+ENV = {"DISCORD_WEBHOOK_URL": WEBHOOK, "DISCORD_PING_USER_ID": PING}
 
 
 class ConfigTest(unittest.TestCase):
